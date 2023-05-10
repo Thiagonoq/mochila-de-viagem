@@ -26,11 +26,11 @@ form.addEventListener("submit", (evento) => {
 
         atualizaItem(itemAtual);
         
-        itens[existe.id] = itemAtual;
+        itens[itens.findIndex(elemento => elemento.id === existe.id)] = itemAtual;
 
     } else {
         
-        itemAtual.id = itens.length;
+        itemAtual.id = itens[itens.length -1] ? (itens[itens.length-1]).id +1 : 0;
         
         adicionaItem(itemAtual);
         
@@ -39,7 +39,7 @@ form.addEventListener("submit", (evento) => {
     }
 
     localStorage.setItem("itens", JSON.stringify(itens));
-
+    
     nome.value = "";
     quantidade.value = "";
 
@@ -61,7 +61,7 @@ function adicionaItem(item) {
     novoItem.innerHTML += item.nome;
 
     //cria botão de deletar
-    novoItem.appendChild(botaoDeleta());
+    novoItem.appendChild(botaoDeleta(item.id));
 
     //imprime o resultado na pagina html
     lista.appendChild(novoItem);
@@ -71,17 +71,21 @@ function atualizaItem (item) {
     document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade;
 }
 
-function botaoDeleta () {
+function botaoDeleta (id) {
     const elementoBotao = document.createElement("button");
     elementoBotao.innerText = "X";
 
     elementoBotao.addEventListener("click", function() {
-        deletaElemento(this.parentNode);
+        deletaElemento(this.parentNode,id);
     })
 
     return elementoBotao;
 }
 
-function deletaElemento(elemento) {
+function deletaElemento(elemento,id) {
     elemento.remove();
+
+    itens.splice(itens.findIndex(elemento => elemento.id === id),1);
+
+    localStorage.setItem("itens", JSON.stringify(itens));
 }
